@@ -42,7 +42,7 @@ fn initalize_game() -> GameState {
 
 
     g
-}
+}   
 
 
 fn loop_game(g: &mut GameState) {
@@ -53,6 +53,7 @@ fn loop_game(g: &mut GameState) {
     let user_input: String = ui::user_interface::generate_ui(&g.ui_state);
 
     // handle user input
+    let command: 
 
 
     // update game state

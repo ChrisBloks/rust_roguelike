@@ -2,10 +2,39 @@ use crate::BaseCharacter;
 use crate::Array2D;
 use crate::Location;
 
-pub enum Entity {
-    WALL,
-    CHARACTER,
-    EMPTY,
+
+
+mod entity {
+    pub enum EntityType {
+        WALL,
+        CHARACTER,
+        EMPTY,
+        OTHER,
+    }
+
+    pub struct Entity {
+        e_type: EntityType,
+        display: Option<char>,
+    }
+
+    impl Entity {
+        pub fn render(&self) -> char {
+            match self.e_type {
+                EntityType::CHARACTER => self.display.clone().unwrap_or('%'),
+                EntityType::EMPTY => '_',
+                EntityType::WALL => '#',
+                EntityType::OTHER => '?',
+            }
+        }
+
+        pub fn get_type(display: char) -> EntityType {
+            match display {
+                '#' => EntityType::WALL,
+                '_' => EntityType::EMPTY,
+                _ => EntityType::OTHER,
+            }
+        }
+    }
 }
 
 
