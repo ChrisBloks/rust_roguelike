@@ -1,74 +1,13 @@
 
 mod character;
 mod location;
+mod ui;
+mod game_state;
 
 use array2d::{Array2D, Error};
 use crate::character::BaseCharacter;
 use crate::location::Location;
-
-struct GameState {
-    characters: Vec<BaseCharacter>,
-    terrain_map: Array2D<char>,
-    terminate: bool,
-}
-
-impl GameState {
-    fn render(&self) {
-        // Generate terrain map
-        let mut display_map = self.terrain_map.clone();
-
-        // place items (overwrite terrain display)
-
-        // place characters (overwrite items display)
-        self.characters.iter()
-        .for_each(
-            |char: &BaseCharacter| {
-                let char_loc: &Location = &char.position;
-                if let Some(loc) = display_map.get_mut(char_loc.y, char_loc.x) {
-                    *loc = char.display;
-                }
-            }
-        );
-
-        // Display loop
-        for row_iter in display_map.rows_iter() {
-            for element in row_iter {
-                print!("{} ", element);
-            }
-            println!();
-        }
-    }
-
-    fn generate_map(max_x: Option<usize>, max_y: Option<usize>) -> Array2D<char> {
-        // Default values
-        let default_symbol: char = '0';
-        let default_x = 6;
-        let default_y = 8;
-
-        let max_x: usize = max_x.unwrap_or(default_x);
-        let max_y: usize = max_y.unwrap_or(default_y);
-
-        // TODO: Create a terrain map
-        let mut map = Array2D::filled_with(
-            '0', // Default terrain symbol
-            max_y, // y-width
-            max_x, // x-width
-        );
-
-        // Surround map with walls
-        for x in 0..max_x {
-            map.set(0, x, '#').expect("generate_map error in wall x-loop.");
-            map.set(max_y-1, x, '#').expect("generate_map error in wall x-loop.");
-        }
-
-        for y in 0..max_y {
-            map.set(y, 0, '#').expect("generate_map error in wall y-loop.");
-            map.set(y, max_x-1, '#').expect("generate_map error in wall y-loop.");
-        }
-
-        map
-    }
-}
+use crate::game_state::GameState;
 
 fn main() {
     // Initialize game
@@ -87,6 +26,7 @@ fn initalize_game() -> GameState {
         characters:  Vec::<BaseCharacter>::new(),
         terrain_map: GameState::generate_map(None, None),
         terminate: false,
+        ui_state: String::from("map"),
     };
 
     // Add Player
@@ -107,11 +47,13 @@ fn initalize_game() -> GameState {
 
 fn loop_game(g: &mut GameState) {
     // display game state
-    g.render();
+    g.render_map();
     
     // display user interface
+    let user_input: String = ui::user_interface::generate_ui(&g.ui_state);
 
     // handle user input
+
 
     // update game state
     g.terminate = true;
