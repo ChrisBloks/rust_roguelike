@@ -8,23 +8,21 @@ use array2d::{Array2D, Error};
 use crate::character::BaseCharacter;
 use crate::location::Location;
 use crate::game_state::GameState;
+use crate::ui::user_interface::u
 
 fn main() {
     // Initialize game
     let mut g = initalize_game();
 
     // Loop game
-    while !g.terminate {
-        loop_game(&mut g);
-    }
-
+    loop_game(&mut g);
 }
 
 fn initalize_game() -> GameState {
     // Generate base GameState
     let mut g = GameState {
         characters:  Vec::<BaseCharacter>::new(),
-        terrain_map: GameState::generate_map(None, None),
+        terrain_map: GameState::initialize_map(None, None),
         terminate: false,
         ui_state: String::from("map"),
     };
@@ -46,17 +44,19 @@ fn initalize_game() -> GameState {
 
 
 fn loop_game(g: &mut GameState) {
-    // display game state
-    g.render_map();
-    
-    // display user interface
-    let user_input: String = ui::user_interface::generate_ui(&g.ui_state);
+    while !g.terminate {
+        // display game state
+        g.render_map();
+        
+        // display user interface
+        let user_input: String = ui::user_interface::generate_ui(&g.ui_state);
 
-    // handle user input
-    let command: 
+        // handle user input
+        let command: UserCommand = ui::user_interface::interpret_input(user_input);
 
+        // update game state
+        g.handle_user_command(command);
 
-    // update game state
-    g.terminate = true;
-
+        g.terminate = true;
+    }
 }

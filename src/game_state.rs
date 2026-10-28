@@ -18,6 +18,7 @@ mod entity {
     }
 
     impl Entity {
+        /// Get an Entity's char representation
         pub fn render(&self) -> char {
             match self.e_type {
                 EntityType::CHARACTER => self.display.clone().unwrap_or('%'),
@@ -27,6 +28,7 @@ mod entity {
             }
         }
 
+        /// Try to get a char's Entity type
         pub fn get_type(display: char) -> EntityType {
             match display {
                 '#' => EntityType::WALL,
@@ -46,6 +48,7 @@ pub struct GameState {
 }
 
 impl GameState {
+    /// Display the current map state to the user
     pub fn render_map(&self) {
         // Generate terrain map
         let mut display_map = self.terrain_map.clone();
@@ -72,7 +75,8 @@ impl GameState {
         }
     }
 
-    pub fn generate_map(max_x: Option<usize>, max_y: Option<usize>) -> Array2D<char> {
+    /// 
+    pub fn initialize_map(max_x: Option<usize>, max_y: Option<usize>) -> Array2D<char> {
         // Default values
         let default_symbol: char = '_';
         let default_x = 6;
@@ -100,5 +104,9 @@ impl GameState {
         }
 
         map
+    }
+
+    pub fn valid_move_to(&self, loc: Location) -> bool {
+        true
     }
 }

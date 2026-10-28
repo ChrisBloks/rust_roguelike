@@ -1,8 +1,20 @@
+/// Module responsible for displaying the UI and interpreting user inputs
 pub mod user_interface {
 
+    enum UserCommand {
+        QUIT,
+        MOVE(MoveCommand),
+    }
+
     use std::io;
+    use crate::{character::MoveCommand};
 
+    // ==================================================================
+    // Ui-generation
+    // ==================================================================
 
+    /// Generic switch between possible UI states. <br>
+    /// Valid inputs: "map"
     pub fn generate_ui(state: &String) -> String {
 
         double_line();
@@ -37,5 +49,20 @@ pub mod user_interface {
         println!("==============================================");
     }
 
+    // ==================================================================
+    // Input interpretation
+    // ==================================================================
+
+    /// Try to convert a user input String into a UserCommand which can be interpreted by the gamestate
+    pub fn interpret_input(user_input: String) -> Option<UserCommand> {
+        match user_input.as_str() {
+            "W" => Some(UserCommand::MOVE(MoveCommand::UP)),
+            "A" => Some(UserCommand::MOVE(MoveCommand::LEFT)),
+            "S" => Some(UserCommand::MOVE(MoveCommand::DOWN)),
+            "D" => Some(UserCommand::MOVE(MoveCommand::RIGHT)),
+            "Q" | "Quit" => Some(UserCommand::QUIT),
+            _ => None,
+        }
+    }
 
 }
