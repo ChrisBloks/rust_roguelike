@@ -1,6 +1,5 @@
 
 mod character;
-mod location;
 mod ui;
 mod game_state;
 
@@ -8,7 +7,7 @@ use array2d::{Array2D, Error};
 use crate::character::BaseCharacter;
 use crate::location::Location;
 use crate::game_state::GameState;
-use crate::ui::user_interface::u
+use crate::ui::user_interface::UserCommand;
 
 fn main() {
     // Initialize game
@@ -37,8 +36,6 @@ fn initalize_game() -> GameState {
 
     // Add ???
 
-
-
     g
 }   
 
@@ -52,7 +49,7 @@ fn loop_game(g: &mut GameState) {
         let user_input: String = ui::user_interface::generate_ui(&g.ui_state);
 
         // handle user input
-        let command: UserCommand = ui::user_interface::interpret_input(user_input);
+        let command: Option<UserCommand> = ui::user_interface::interpret_input(user_input);
 
         // update game state
         g.handle_user_command(command);

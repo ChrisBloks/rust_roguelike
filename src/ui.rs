@@ -1,7 +1,7 @@
 /// Module responsible for displaying the UI and interpreting user inputs
 pub mod user_interface {
 
-    enum UserCommand {
+    pub enum UserCommand {
         QUIT,
         MOVE(MoveCommand),
     }
