@@ -1,12 +1,14 @@
 use crate::Array2D;
 use crate::BaseCharacter;
-use crate::Location;
+use crate::game_state::entity::EntityType;
 use crate::ui::user_interface::UserCommand;
 
-mod location {
+pub mod location {
+    
+
     use crate::game_state::entity::{Entity, EntityType};
 
-    struct Location<'a> {
+    pub struct Location<'a> {
         pub x: usize,
         pub y: usize,
         entity: Option<&'a Entity>,
@@ -27,6 +29,14 @@ mod location {
         pub fn get_entity(&self) -> Option<&Entity> {
             self.entity
         }
+
+        pub fn create_wall(x: usize, y:usize, wall_entity: &Entity) ->  Location {
+            Location { 
+                x,
+                y,
+                entity: Some(wall_entity) 
+            }
+        } 
     }
 }
 
@@ -72,14 +82,17 @@ mod entity {
     }
 }
 
-pub struct GameState {
+
+use crate::game_state::location::Location;
+
+pub struct GameState<'a> {
     pub characters: Vec<BaseCharacter>,
-    pub terrain_map: Array2D<char>,
+    pub location_map: Array2D<Location<'a>>,
     pub terminate: bool,
     pub ui_state: String,
 }
 
-impl GameState {
+impl GameState<'_> {
     /// Display the current map state to the user
     pub fn render_map(&self) {
         // Generate terrain map
@@ -91,8 +104,8 @@ impl GameState {
         self.characters
             .iter()
             .for_each(|character: &BaseCharacter| {
-                let character_loc: &Location = &character.position;
-                if let Some(loc_char) = display_map.get_mut(character_loc.y, character_loc.x) {
+                let (x, y): &(usize, usize) = &character.position;
+                if let Some(loc_char) = display_map.get_mut(*y, *x) {
                     *loc_char = character.display;
                 }
             });
@@ -107,7 +120,7 @@ impl GameState {
     }
 
     ///
-    pub fn initialize_map(max_x: Option<usize>, max_y: Option<usize>) -> Array2D<char> {
+    pub fn initialize_map(max_x: Option<usize>, max_y: Option<usize>) -> Array2D<Location> {
         // Default values
         let default_symbol: char = '_';
         let default_x = 6;

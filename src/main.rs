@@ -5,7 +5,6 @@ mod game_state;
 
 use array2d::{Array2D, Error};
 use crate::character::BaseCharacter;
-use crate::location::Location;
 use crate::game_state::GameState;
 use crate::ui::user_interface::UserCommand;
 
@@ -29,7 +28,7 @@ fn initalize_game() -> GameState {
     // Add Player
     let player_character = BaseCharacter {
         name: String::from("Marius"),
-        position: Location {x: 2, y: 1},
+        position: (2, 1), // Default start location
         display: '@',
     };
     g.characters.push(player_character);

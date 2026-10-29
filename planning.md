@@ -71,6 +71,60 @@ impl Location {
     pub fn get_entity(&self) -> Option<&Entity>;
 }
 ```
+However, when a struct contains **a reference** to another struct (here Location contains an Entity), we have to introduce a lifetime specifier.
+
+Suppose we do not, there exists a posibility that the 'Entity', the object which is being referenced, becomes invalid while the location containing the reference remains valid. This would result in a dangling pointer (the reference in the 'entity' field points to freed-up memory).
+
+Therefore, rust requires us to specify that the container struct (Location) may only be valid for as long as the refrenced struct (Entity) remains valid. This is accomplished through the lifetime specifier:
+
+```rust
+struct Location<'a> {
+    ...
+    entity: Option<&'a Entity>
+}
+```
+Alternatively we could allow Location to own the entity object, but this is undesirable if an entity may move between locations. Alternatively still we may come up with a way in which we do not have to contain a reference to Entity, which I will get back to later. 
+
+### Determine basic functionality of a GameState
+Instead of declaring a 'map' class, it may be good do declare a 'GameState' class which contains all high-level information, including a map. A GameState should keep track of at least two things. It should contain (a reference to) the map on which the player can move around. And a flag that can break the game loop.
+Additionally, it may be useful for the GameState object to know which Characters are currently alive, and it may be good to keep track of what the user is seeing (the UI-state).
+
+```rust
+struct GameState {
+    pub characters: Vec<BaseCharacter>,
+    pub terrain_map: Array2D<char>,
+    pub terminate: bool,
+    pub ui_state: String,
+}
+
+impl GameState {
+    pub fn render_map(&self) -> (),
+    pub fn initalize_map(max_x, max_y) -> Array2D<char>,
+    pub fn terminate(&self) -> bool,
+}
+```
+
+### A location map and the problem of lifetimes
+Instead of storing chars in a map and inferring what type of entity is on a location based on its char, it seems prudent to create a system in which the entity may be accessed directly (if it exists) at a location. Therefore we change 
+```rust 
+Array2D<char>
+``` 
+to 
+```rust
+Array2D<Location>
+```
+
+However this introduces a problem, because we defined Location to contain a reference to an Entity, and now because we define GameState to contain a Location, we need to pass a life time specifier all the way from GameState, through Location, to Entity, which is quite a hassle.
+Luckily, people before me have found a way to circumvent this issue. Instead of passing an Entity directly to Location, we may define an Collection of EntityIDs and use those to access Entities. One benefit of this is that an numerical is much cheaper to copy/clone than a struct depending on what the struct contains. Because an Entity may in the future become a complexer struct, I choose the EntityID route.
+
+### Tracking EntityIDs
+For now we'll define an EntityID as:
+```rust
+pub struct EntityID(u32)
+```
+We could use a Vector to store Entities and use an Entity's ID to index it. However, Entities in our game may frequently be added and removed (e.g. enemies, items, neutral mobs), so we should take into account how we deal with insertion and deletion from our collection. One issue with a Vec is that if an entity were to  be 'despawned' and removed from the Vec, we'd leave behind a 'None' at the index it was at. We can not remove the entity entirely because other structs that were pointing at the removed entity would then be pointing at a completely different entity (remember that the EntityIDs serve as indices).
+Thankfully again, brighter minds have come up with a 'SlotMap'.
+
 
 ### Setup basic game loop
 In order to play the game the user should able to 
