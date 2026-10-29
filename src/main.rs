@@ -2,11 +2,14 @@
 mod character;
 mod ui;
 mod game_state;
+mod location;
+mod entity;
 
 use array2d::{Array2D, Error};
 use crate::character::BaseCharacter;
 use crate::game_state::GameState;
 use crate::ui::user_interface::UserCommand;
+
 
 fn main() {
     // Initialize game
@@ -18,20 +21,17 @@ fn main() {
 
 fn initalize_game() -> GameState {
     // Generate base GameState
-    let mut g = GameState {
-        characters:  Vec::<BaseCharacter>::new(),
-        terrain_map: GameState::initialize_map(None, None),
-        terminate: false,
-        ui_state: String::from("map"),
-    };
+    let mut g = GameState::new();
 
     // Add Player
-    let player_character = BaseCharacter {
+    let player_character: Entity = Entity::new
+    
+    BaseCharacter {
         name: String::from("Marius"),
         position: (2, 1), // Default start location
         display: '@',
     };
-    g.characters.push(player_character);
+    g.add_entity(PlayerCharacter(player_character));
 
     // Add ???
 

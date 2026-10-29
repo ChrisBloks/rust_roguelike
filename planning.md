@@ -123,8 +123,25 @@ For now we'll define an EntityID as:
 pub struct EntityID(u32)
 ```
 We could use a Vector to store Entities and use an Entity's ID to index it. However, Entities in our game may frequently be added and removed (e.g. enemies, items, neutral mobs), so we should take into account how we deal with insertion and deletion from our collection. One issue with a Vec is that if an entity were to  be 'despawned' and removed from the Vec, we'd leave behind a 'None' at the index it was at. We can not remove the entity entirely because other structs that were pointing at the removed entity would then be pointing at a completely different entity (remember that the EntityIDs serve as indices).
-Thankfully again, brighter minds have come up with a 'SlotMap'.
+Thankfully again, brighter minds have come up with a 'SlotMap' which support O(1) insertion and deletion and it provides some desirable safety features.
 
+```rust
+struct GameState {
+    entity_sm = SlotMap<EntityID, Entity> // Mapping of EntityID -> Entity
+    ...
+}
+```
+
+### SlotMap, EntityID, and implementing the 'Key' trait 
+https://docs.rs/slotmap/latest/slotmap/
+
+A SlotMap is similar to a HasMap, however, a SlotMap generates and retuns the key when inserting a new value. Additionally there is no hashing involved, it functions ona  direct indexing basis. One major feature of the SlotMap is that it can "reclaim memory" from deleted elements. Ordinarily in a Vec, if a certain item is deleted from index '1', that index is set to 'None', it represents a piece of memory which is now lost. (Alternatively all the items in the vec can be shifted, but that comes with its own problems.)
+
+Because EntityID is not natively supported as a key type for a SlotMap, we have to implement the SlotMap Key trait for EntityID. Fortunately the SlotMap crate comes with an macro that can handle this for us.
+
+```rust
+new_key_type! {struct }
+```
 
 ### Setup basic game loop
 In order to play the game the user should able to 
